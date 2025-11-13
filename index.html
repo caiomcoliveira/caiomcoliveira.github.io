@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Python & FastAPI Quiz</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #0d1117;
+        color: #c9d1d9;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+      .quiz-container {
+        background: #161b22;
+        padding: 2rem;
+        border-radius: 12px;
+        max-width: 600px;
+        width: 90%;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+      }
+      h2 {
+        color: #58a6ff;
+      }
+      pre {
+        background: #0d1117;
+        border-radius: 8px;
+        padding: 0.5rem;
+        overflow-x: auto;
+      }
+      .choices label {
+        display: block;
+        background: #21262d;
+        padding: 0.75rem;
+        border-radius: 8px;
+        margin: 0.5rem 0;
+        cursor: pointer;
+        /* Modified: Added transition for border and a transparent border to prevent layout shift */
+        border: 2px solid transparent;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .choices input {
+        display: none;
+      }
+      .choices label:hover {
+        background: #30363d;
+      }
+
+      /* --- NEW RULE --- */
+      /* Highlights the label when its child input is checked */
+      .choices label:has(input[name='choice']:checked) {
+        border-color: #58a6ff;
+        background: #30363d; /* Optional: also change background */
+      }
+
+      button {
+        background: #238636;
+        color: #fff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #2ea043;
+      }
+      #result {
+        text-align: center;
+        color: #58a6ff;
+        font-size: 1.2rem;
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="quiz-container">
+      <h2 id="question-title"></h2>
+      <pre><code id="question-code" class="language-python"></code></pre>
+      <div class="choices" id="choices"></div>
+      <button id="next-btn">Next</button>
+      <div id="result"></div>
+    </div>
+
+    <script>
+      // Note: highlightAll() runs on page load, but we need to
+      // re-highlight manually when changing content, which the code already does.
+      // hljs.highlightAll();
+
+      const questions = [
+        {
+          title: '1. What is the output of the following code?',
+          code: `print(type([]) == list)`,
+          choices: ['True', 'False', 'list', 'TypeError'],
+          correct: 0,
+        },
+        {
+          title: '2. Which of the following is a valid variable name?',
+          code: ``, // This question has no code
+          choices: ['2value', 'value_2', 'value-2', 'value 2'],
+          correct: 1,
+        },
+        {
+          title: '3. What does this list comprehension return?',
+          code: `[x*x for x in range(3)]`,
+          choices: ['[1, 2, 3]', '[0, 1, 4]', '[1, 4, 9]', 'Error'],
+          correct: 1,
+        },
+        {
+          title: "4. In Python, what is the difference between 'is' and '=='?",
+          code: ``, // This question has no code
+          choices: [
+            "'is' compares values, '==' compares identities",
+            "'is' compares identities, '==' compares values",
+            'They are identical',
+            "'is' is used only for numbers",
+          ],
+          correct: 1,
+        },
+        {
+          title: '5. What does the following function return?',
+          code: `def func(a, b=2, c=3):\n    return a + b + c\n\nprint(func(1, c=4))`,
+          choices: ['6', '7', '8', 'Error'],
+          correct: 1,
+        },
+        {
+          title: '6. In FastAPI, what decorator defines a GET route?',
+          code: ``, // This question has no code
+          choices: [
+            "@app.route('/path')",
+            "@app.get('/path')",
+            "@app.endpoint('/path')",
+            "@app.GET('/path')",
+          ],
+          correct: 1,
+        },
+        {
+          title: '7. In SQLAlchemy ORM, what does `relationship()` do?',
+          code: ``, // This question has no code
+          choices: [
+            'Defines a database column',
+            'Creates a SQL join manually',
+            'Links models via foreign keys for lazy loading',
+            'Executes a query',
+          ],
+          correct: 2,
+        },
+        {
+          title: '8. What will this async FastAPI function return?',
+          code: `from fastapi import FastAPI\napp = FastAPI()\n\n@app.get("/")\nasync def read_root():\n    return {"msg": "ok"}`,
+          choices: [
+            "A plain string 'ok'",
+            "A JSON object {'msg': 'ok'}",
+            'An HTML response',
+            'A 404 error',
+          ],
+          correct: 1,
+        },
+      ];
+
+      let current = 0;
+      let score = 0;
+
+      const titleEl = document.getElementById('question-title');
+      const codeEl = document.getElementById('question-code');
+      // --- MODIFIED ---
+      // Get the parent <pre> element to hide/show it
+      const codeBlockEl = codeEl.parentElement;
+      const choicesEl = document.getElementById('choices');
+      const nextBtn = document.getElementById('next-btn');
+      const resultEl = document.getElementById('result');
+
+      function loadQuestion() {
+        const q = questions[current];
+        titleEl.textContent = q.title;
+
+        // --- MODIFIED ---
+        // Show/hide code block based on content
+        if (q.code && q.code.trim() !== '') {
+          codeEl.textContent = q.code;
+          hljs.highlightElement(codeEl);
+          codeBlockEl.style.display = 'block';
+        } else {
+          codeEl.textContent = '';
+          codeBlockEl.style.display = 'none';
+        }
+        // --- END MODIFICATION ---
+
+        choicesEl.innerHTML = '';
+        q.choices.forEach((choice, i) => {
+          const label = document.createElement('label');
+          // This structure is fine for the :has() selector
+          label.innerHTML = `<input type="radio" name="choice" value="${i}"> ${choice}`;
+          choicesEl.appendChild(label);
+        });
+
+        resultEl.textContent = '';
+        if (current === questions.length - 1) nextBtn.textContent = 'Finish';
+      }
+
+      nextBtn.addEventListener('click', () => {
+        const selected = document.querySelector('input[name="choice"]:checked');
+        if (!selected) {
+          alert('Please select an answer.');
+          return;
+        }
+        if (parseInt(selected.value) === questions[current].correct) score++;
+        current++;
+        if (current < questions.length) {
+          loadQuestion();
+        } else {
+          titleEl.textContent = 'Quiz Completed!';
+          codeEl.textContent = '';
+          // --- MODIFIED ---
+          // Hide the code block on the final screen
+          codeBlockEl.style.display = 'none';
+          choicesEl.innerHTML = '';
+          nextBtn.style.display = 'none';
+          resultEl.textContent = `You scored ${score} / ${questions.length}`;
+        }
+      });
+
+      loadQuestion();
+    </script>
+  </body>
+</html>
