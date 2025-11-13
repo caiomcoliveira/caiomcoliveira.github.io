@@ -1,217 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dart & Flutter Quiz</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/dart.min.js"></script>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background: #0d1117;
-        color: #c9d1d9;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-      }
-      .quiz-container {
-        background: #161b22;
-        padding: 2rem;
-        border-radius: 12px;
-        max-width: 600px;
-        width: 90%;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
-      }
-      h2 {
-        color: #58a6ff;
-      }
-      pre {
-        background: #0d1117;
-        border-radius: 8px;
-        padding: 0.5rem;
-        overflow-x: auto;
-      }
-      .choices label {
-        display: block;
-        background: #21262d;
-        padding: 0.75rem;
-        border-radius: 8px;
-        margin: 0.5rem 0;
-        cursor: pointer;
-        border: 2px solid transparent;
-        transition: background 0.2s, border-color 0.2s;
-      }
-      .choices input {
-        display: none;
-      }
-      .choices label:hover {
-        background: #30363d;
-      }
-      .choices label:has(input[name='choice']:checked) {
-        border-color: #58a6ff;
-        background: #30363d;
-      }
-      button {
-        background: #238636;
-        color: #fff;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        font-size: 1rem;
-        border-radius: 8px;
-        margin-top: 1rem;
-        cursor: pointer;
-      }
-      button:hover {
-        background: #2ea043;
-      }
-      #result {
-        text-align: center;
-        color: #58a6ff;
-        font-size: 1.2rem;
-        margin-top: 1rem;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="quiz-container">
-      <h2 id="question-title"></h2>
-      <pre><code id="question-code" class="language-dart"></code></pre>
-      <div class="choices" id="choices"></div>
-      <button id="next-btn">Next</button>
-      <div id="result"></div>
-    </div>
 
-    <script>
-      const questions = [
-        {
-          title: '1. What is the output of this Dart code?',
-          code: `void main() {\n  print(1 + 2 * 3);\n}`,
-          choices: ['9', '7', '6', '5'],
-          correct: 1,
-        },
-        {
-          title: '2. Which keyword is used to create a constant value in Dart?',
-          code: ``,
-          choices: ['final', 'let', 'const', 'immutable'],
-          correct: 2,
-        },
-        {
-          title: '3. What will this code print?',
-          code: `void main() {\n  var list = [1, 2, 3];\n  list.add(4);\n  print(list.length);\n}`,
-          choices: ['3', '4', 'Error', 'null'],
-          correct: 1,
-        },
-        {
-          title: '4. In Flutter, what widget is used to create a scrollable list of widgets?',
-          code: ``,
-          choices: ['ListView', 'Column', 'Stack', 'GridView.count'],
-          correct: 0,
-        },
-        {
-          title: '5. What does the "build" method in a StatelessWidget return?',
-          code: ``,
-          choices: [
-            'A function that runs the app',
-            'A Widget tree describing the UI',
-            'A State object',
-            'A MaterialApp instance only',
-          ],
-          correct: 1,
-        },
-        {
-          title: '6. What will this Flutter widget display?',
-          code: `Text('Hello' + ' World');`,
-          choices: ['Hello', 'World', 'Hello World', 'Error'],
-          correct: 2,
-        },
-        {
-          title: '7. What is the purpose of setState() in Flutter?',
-          code: ``,
-          choices: [
-            'To rebuild the widget tree when data changes',
-            'To navigate to a new route',
-            'To create a new widget type',
-            'To initialize a widget once',
-          ],
-          correct: 0,
-        },
-        {
-          title: '8. What happens when you run this asynchronous Dart function?',
-          code: `Future<void> main() async {\n  print('A');\n  await Future.delayed(Duration(seconds: 1));\n  print('B');\n  print('C');\n}`,
-          choices: [
-            'A B C (instantly)',
-            'A C B (after delay)',
-            'A (wait 1s) B C',
-            'B A C',
-          ],
-          correct: 2,
-        },
-      ];
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dart & Flutter Quiz</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/dart.min.js"></script>
+  <link src="/css/styles.css" rel="stylesheet" />
+</head>
 
-      let current = 0;
-      let score = 0;
+<body>
+  <div class="quiz-container">
+    <h2 id="question-title"></h2>
+    <pre><code id="question-code" class="language-dart"></code></pre>
+    <div class="choices" id="choices"></div>
+    <button id="next-btn">Next</button>
+    <div id="result"></div>
+  </div>
 
-      const titleEl = document.getElementById('question-title');
-      const codeEl = document.getElementById('question-code');
-      const codeBlockEl = codeEl.parentElement;
-      const choicesEl = document.getElementById('choices');
-      const nextBtn = document.getElementById('next-btn');
-      const resultEl = document.getElementById('result');
+  <script>
+    const questions = [
+      {
+        title: '1. What will this Dart code print, and why?',
+        code: `void main() {
+  var a = [1, 2, 3];
+  var b = a;
+  b.add(4);
+  print(a.length);
+}`,
+        choices: ['3 — Lists are copied by value', '4 — Lists are reference types', 'Error — Reassignment not allowed', 'Undefined behavior'],
+        correct: 1,
+      },
+      {
+        title: '2. What is the main difference between "final" and "const" in Dart?',
+        code: ``,
+        choices: [
+          '"const" creates compile-time constants, "final" is runtime constant',
+          '"final" and "const" behave identically in all cases',
+          '"const" variables can be reassigned once',
+          '"final" values are always mutable',
+        ],
+        correct: 0,
+      },
+      {
+        title: '3. What will this code print and why?',
+        code: `void main() async {
+  print('A');
+  Future(() => print('B'));
+  scheduleMicrotask(() => print('C'));
+  print('D');
+}`,
+        choices: [
+          'A B C D',
+          'A D C B',
+          'A C D B',
+          'C A D B',
+        ],
+        correct: 2,
+      },
+      {
+        title: '4. In Flutter, which approach minimizes rebuilds for performance optimization?',
+        code: ``,
+        choices: [
+          'Using StatefulWidget everywhere',
+          'Using const constructors and immutable widgets',
+          'Wrapping widgets in setState()',
+          'Using ListView.builder for static content',
+        ],
+        correct: 1,
+      },
+      {
+        title: '5. In a StatefulWidget, when is the "initState" method called?',
+        code: ``,
+        choices: [
+          'Every time the widget rebuilds',
+          'Once when the State object is inserted into the widget tree',
+          'Only when setState is called',
+          'Before the widget’s constructor',
+        ],
+        correct: 1,
+      },
+      {
+        title: '6. What will this code display and why?',
+        code: `class MyWidget extends StatelessWidget {
+  final String text;
+  const MyWidget(this.text);
 
-      function loadQuestion() {
-        const q = questions[current];
-        titleEl.textContent = q.title;
+  @override
+  Widget build(BuildContext context) {
+    return Text(text.toUpperCase());
+  }
+}
 
-        if (q.code && q.code.trim() !== '') {
-          codeEl.textContent = q.code;
-          hljs.highlightElement(codeEl);
-          codeBlockEl.style.display = 'block';
-        } else {
-          codeEl.textContent = '';
-          codeBlockEl.style.display = 'none';
-        }
+void main() {
+  runApp(const MyWidget('flutter'));
+}`,
+        choices: ['flutter', 'FLUTTER', 'Error: text not initialized', 'Nothing'],
+        correct: 1,
+      },
+      {
+        title: '7. What is the main advantage of using an isolate in Dart?',
+        code: ``,
+        choices: [
+          'To share mutable memory between threads',
+          'To perform heavy computation without blocking the main isolate',
+          'To speed up synchronous UI rebuilds',
+          'To replace async/await in I/O operations',
+        ],
+        correct: 1,
+      },
+      {
+        title: '8. What will this async Dart code print?',
+        code: `Future<void> main() async {
+  print('A');
+  await Future(() => print('B'));
+  print('C');
+  Future(() => print('D'));
+  print('E');
+}`,
+        choices: [
+          'A B C D E',
+          'A B C E D',
+          'A C B E D',
+          'A B E C D',
+        ],
+        correct: 1,
+      },
+    ];
 
-        choicesEl.innerHTML = '';
-        q.choices.forEach((choice, i) => {
-          const label = document.createElement('label');
-          label.innerHTML = `<input type="radio" name="choice" value="${i}"> ${choice}`;
-          choicesEl.appendChild(label);
-        });
+    let current = 0;
+    let score = 0;
 
-        resultEl.textContent = '';
-        if (current === questions.length - 1) nextBtn.textContent = 'Finish';
+    const titleEl = document.getElementById('question-title');
+    const codeEl = document.getElementById('question-code');
+    const codeBlockEl = codeEl.parentElement;
+    const choicesEl = document.getElementById('choices');
+    const nextBtn = document.getElementById('next-btn');
+    const resultEl = document.getElementById('result');
+
+    function loadQuestion() {
+      const q = questions[current];
+      titleEl.textContent = q.title;
+
+      if (q.code && q.code.trim() !== '') {
+        codeEl.textContent = q.code;
+        hljs.highlightElement(codeEl);
+        codeBlockEl.style.display = 'block';
+      } else {
+        codeEl.textContent = '';
+        codeBlockEl.style.display = 'none';
       }
 
-      nextBtn.addEventListener('click', () => {
-        const selected = document.querySelector('input[name="choice"]:checked');
-        if (!selected) {
-          alert('Please select an answer.');
-          return;
-        }
-        if (parseInt(selected.value) === questions[current].correct) score++;
-        current++;
-        if (current < questions.length) {
-          loadQuestion();
-        } else {
-          titleEl.textContent = 'Quiz Completed!';
-          codeEl.textContent = '';
-          codeBlockEl.style.display = 'none';
-          choicesEl.innerHTML = '';
-          nextBtn.style.display = 'none';
-          resultEl.textContent = `You scored ${score} / ${questions.length}`;
-        }
+      choicesEl.innerHTML = '';
+      q.choices.forEach((choice, i) => {
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="radio" name="choice" value="${i}"> ${choice}`;
+        choicesEl.appendChild(label);
       });
 
-      loadQuestion();
-    </script>
-  </body>
+      resultEl.textContent = '';
+      if (current === questions.length - 1) nextBtn.textContent = 'Finish';
+    }
+
+    nextBtn.addEventListener('click', () => {
+      const selected = document.querySelector('input[name="choice"]:checked');
+      if (!selected) {
+        alert('Please select an answer.');
+        return;
+      }
+      if (parseInt(selected.value) === questions[current].correct) score++;
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        titleEl.textContent = 'Quiz Completed!';
+        codeEl.textContent = '';
+        codeBlockEl.style.display = 'none';
+        choicesEl.innerHTML = '';
+        nextBtn.style.display = 'none';
+        resultEl.textContent = `You scored ${score} / ${questions.length}`;
+      }
+    });
+
+    loadQuestion();
+  </script>
+</body>
+
 </html>
