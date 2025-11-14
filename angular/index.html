@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TypeScript & Angular Quiz</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+  <link rel="stylesheet" href="https://caiomcoliveira.github.io/css/styles.css" />
+</head>
+
+<body>
+  <div class="quiz-container">
+    <h2 id="question-title"></h2>
+    <pre><code id="question-code" class="language-typescript"></code></pre>
+    <div class="choices" id="choices"></div>
+    <button id="next-btn">Next</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        title: "1. What does this TypeScript code print and why?",
+        code: `const obj = { a: 1 };
+const copy = obj;
+copy.a = 5;
+
+console.log(obj.a);`,
+        choices: [
+          "1 — objects are copied by value",
+          "5 — objects are reference types",
+          "Error — reassignment not allowed",
+          "undefined"
+        ],
+        correct: 1
+      },
+      {
+        title: "2. What does the '!' operator mean in Angular?",
+        code: `export class UserComponent {
+  name!: string;
+}`,
+        choices: [
+          "Marks the property as definitely assigned",
+          "Makes the property private",
+          "Enables strict null checking for the field",
+          "Throws an error if not assigned"
+        ],
+        correct: 0
+      },
+      {
+        title: "3. What will this TypeScript code output?",
+        code: `async function run() {
+  console.log("A");
+  Promise.resolve().then(() => console.log("B"));
+  console.log("C");
+}
+run();`,
+        choices: [
+          "A B C",
+          "A C B",
+          "B A C",
+          "C A B"
+        ],
+        correct: 1
+      },
+      {
+        title: "4. What does ChangeDetectionStrategy.OnPush do?",
+        code: ``,
+        choices: [
+          "Disables change detection",
+          "Runs change detection only on reference changes or events",
+          "Runs change detection every 16ms",
+          "Triggers manual change detection only"
+        ],
+        correct: 1
+      },
+      {
+        title: "5. What will Angular render and why?",
+        code: `<div *ngIf="false; else blockA">Block B</div>
+<ng-template #blockA>Block A</ng-template>`,
+        choices: [
+          "Block B",
+          "Block A",
+          "Both blocks",
+          "Nothing"
+        ],
+        correct: 1
+      },
+      {
+        title: "6. What happens when this component runs?",
+        code: `@Component({
+  selector: 'app-demo',
+  template: '{{value}}'
+})
+export class DemoComponent {
+  value = 0;
+
+  ngOnInit() {
+    this.value = 10;
+  }
+}`,
+        choices: [
+          "Renders 0",
+          "Renders 10",
+          "Throws change detection error",
+          "Renders nothing"
+        ],
+        correct: 1
+      },
+      {
+        title: "7. What does ViewChild return by default?",
+        code: `@ViewChild('myInput') input!: ElementRef;`,
+        choices: [
+          "A DOM element reference",
+          "A template reference string",
+          "A ChangeDetectorRef instance",
+          "A list of directives on the element"
+        ],
+        correct: 0
+      },
+      {
+        title: "8. What will this RxJS sequence output?",
+        code: `import { of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+
+of(1)
+  .pipe(switchMap(x => of(x * 2)))
+  .subscribe(console.log);`,
+        choices: [
+          "Nothing",
+          "1",
+          "2",
+          "1 and then 2"
+        ],
+        correct: 2
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    const titleEl = document.getElementById("question-title");
+    const codeEl = document.getElementById("question-code");
+    const codeBlockEl = codeEl.parentElement;
+    const choicesEl = document.getElementById("choices");
+    const nextBtn = document.getElementById("next-btn");
+    const resultEl = document.getElementById("result");
+
+    function loadQuestion() {
+      const q = questions[current];
+      titleEl.textContent = q.title;
+
+      if (q.code && q.code.trim() !== "") {
+        codeEl.textContent = q.code;
+        hljs.highlightElement(codeEl);
+        codeBlockEl.style.display = "block";
+      } else {
+        codeEl.textContent = "";
+        codeBlockEl.style.display = "none";
+      }
+
+      choicesEl.innerHTML = "";
+      q.choices.forEach((choice, i) => {
+        const label = document.createElement("label");
+        label.innerHTML = `<input type="radio" name="choice" value="${i}"> ${choice}`;
+        choicesEl.appendChild(label);
+      });
+
+      resultEl.textContent = "";
+      if (current === questions.length - 1) nextBtn.textContent = "Finish";
+    }
+
+    nextBtn.addEventListener("click", () => {
+      const selected = document.querySelector('input[name="choice"]:checked');
+      if (!selected) {
+        alert("Please select an answer.");
+        return;
+      }
+      if (parseInt(selected.value) === questions[current].correct) score++;
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        titleEl.textContent = "Quiz Completed!";
+        codeEl.textContent = "";
+        codeBlockEl.style.display = "none";
+        choicesEl.innerHTML = "";
+        nextBtn.style.display = "none";
+        resultEl.textContent = `You scored ${score} / ${questions.length}`;
+      }
+    });
+
+    loadQuestion();
+  </script>
+</body>
+
+</html>
